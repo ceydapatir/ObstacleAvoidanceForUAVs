@@ -96,32 +96,33 @@ class AirSimDroneEnv(gym.Env):
     def compute_reward(self):
         reward = 0
         done = 0
-        if self.is_collision():
-            reward = -300
+        x,y,z = self.drone.simGetVehiclePose().position
+        target_dist_curr = np.linalg.norm(np.array([x,y,z]) - self.target_pos)
+	
+        if self.is_collision() :
+            reward =-100
             done = 1
+            
+        elif x>=30.0 or y < -10.0 or y > 40.0 or z < -30 or z>-15:
+            reward = -100
+            done = 1
+        
         else:
-           x,y,z = self.drone.simGetVehiclePose().position
-           target_dist_curr = np.linalg.norm(np.array([x,y,z]) - self.target_pos)
-           target_dist_curr = abs(target_dist_curr)
-           reward += (self.target_dist_prev - target_dist_curr)*20
-           reward += (self.startpose-target_dist_curr)
-           self.target_dist_prev = target_dist_curr
-           
-          # if target_dist_prev < target_dist_curr:
-           #    reward = -5*(target_dist_curr - target_dist_prev)
-        
-           if abs(target_dist_curr) <= 5:
-               reward = +300
-               self.win = self.win +1
-               #self.a =1
-               print(self.win)
-               print(self.target_dist_prev)
-               done = 1
-           
-           if reward <= -50:
-               done = 1
-        
+        	reward +=(self.target_dist_prev - target_dist_curr)*5
+        	self.target_dist_prev = target_dist_curr
+        	if y>40.0:
+        		reward -= (y-40.0)*2
+        	if z<-30.5:
+        		reward += (z+30.0)*2
+        		
+        	if abs(target_dist_curr) <= 5.0:
+        		reward +=200
+        		done = 1
+        	elif abs(target_dist_curr) <= 15.0:
+        		reward +=(100 - abs(target_dist_curr))
+       
         return reward, done
+
 
     def is_collision(self):
         current_collision_time = self.drone.simGetCollisionInfo().time_stamp
