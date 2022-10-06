@@ -1,0 +1,15 @@
+{
+	"SettingsVersion": 1.2,
+	"ClockSpeed": 20,
+	"ViewMode": "SpringArmChase",
+	"CameraDefaults": {
+		"CaptureSettings": [
+			{
+				"ImageType": 0,
+				"Width": 50,
+				"Height": 50,
+				"FOV_Degrees": 120
+			}
+		]
+	}
+}
